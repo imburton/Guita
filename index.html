@@ -740,7 +740,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, updateDoc, setDoc, getDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDz9qv0SXeQxighTGayk96bwIoN25DgZh4",
@@ -843,8 +843,7 @@ function startListening(uid) {
 
   // Cargar perfil del usuario
   try {
-    const { doc: pdoc, getDoc: pget } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
-    const snap = await pget(pdoc(db, 'usuarios', uid, 'config', 'perfil'));
+    const snap = await getDoc(doc(db, 'usuarios', uid, 'config', 'perfil'));
     if (snap.exists()) { userPerfil = { ...userPerfil, ...snap.data() }; }
     renderPerfil();
   } catch(e) {}
@@ -1741,9 +1740,7 @@ window.savePerfil = async function() {
   const tz = document.getElementById('perfil-tz').value;
   const uid = auth.currentUser.uid;
   try {
-    await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js').then(async m => {
-      await m.setDoc(m.doc(db, 'usuarios', uid, 'config', 'perfil'), { nombre, moneda, cierre, tz });
-    });
+    await setDoc(doc(db, 'usuarios', uid, 'config', 'perfil'), { nombre, moneda, cierre, tz });
     userPerfil = { nombre, moneda, cierre, tz };
     renderPerfil();
     render();
