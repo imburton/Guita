@@ -237,6 +237,19 @@
   .btn-copy-link{width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:14px;border-radius:10px;padding:13px;cursor:pointer;font-weight:500}
   .btn-copy-link:active{background:var(--border)}
 
+  .perfil-avatar{width:64px;height:64px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;color:#fff;font-weight:600;font-family:var(--mono)}
+  .perfil-nombre{font-size:18px;font-weight:600;text-align:center;margin-bottom:4px}
+  .perfil-email{font-size:13px;color:var(--text3);text-align:center;margin-bottom:24px}
+  .perfil-section{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;margin-top:4px}
+  .perfil-option{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
+  .perfil-option:last-child{border-bottom:none}
+  .perfil-option-label{font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px}
+  .perfil-option-label span{font-size:18px}
+  select.perfil-select{border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;font-family:var(--font);background:var(--surface2);color:var(--text);outline:none}
+  .perfil-input{border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:14px;font-family:var(--font);background:var(--surface2);color:var(--text);outline:none;width:140px;text-align:right}
+  .perfil-input:focus{border-color:var(--accent)}
+  .btn-save-perfil{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:500;font-family:var(--font);cursor:pointer;margin-top:16px}
+  .btn-save-perfil:active{opacity:0.85}
   .btn-traer-fijos{
     width:100%;border:1.5px dashed var(--accent);background:var(--accent-light);
     color:var(--accent-text);border-radius:10px;padding:13px;font-size:14px;
@@ -365,6 +378,7 @@
         <button class="tab-drop-item" id="tab-drop-ingresos" onclick="setTab('ingresos')">💵 Ingresos</button>
         <button class="tab-drop-item" id="tab-drop-presupuesto" onclick="setTab('presupuesto')">🎯 Presupuesto</button>
         <button class="tab-drop-item" id="tab-drop-cuotas" onclick="setTab('cuotas')">💳 Cuotas</button>
+        <button class="tab-drop-item" id="tab-drop-perfil" onclick="setTab('perfil')">👤 Mi perfil</button>
       </div>
     </div>
 
@@ -450,6 +464,57 @@
           <input type="text" id="ing-desc" placeholder="Sueldo, freelance...">
         </div>
         <button class="btn-send" onclick="addIngreso()">Agregar ingreso</button>
+      </div>
+    </div>
+
+    <!-- TAB PERFIL -->
+    <div id="tab-perfil" style="display:none">
+      <div class="card">
+        <div class="perfil-avatar" id="perfil-avatar">👤</div>
+        <div class="perfil-nombre" id="perfil-nombre-display">—</div>
+        <div class="perfil-email" id="perfil-email-display"></div>
+        <div class="perfil-section">Datos personales</div>
+        <div class="perfil-option">
+          <div class="perfil-option-label"><span>👤</span> Nombre</div>
+          <input class="perfil-input" id="perfil-nombre" placeholder="Tu nombre" maxlength="30">
+        </div>
+        <div class="perfil-section" style="margin-top:16px">Preferencias</div>
+        <div class="perfil-option">
+          <div class="perfil-option-label"><span>💱</span> Moneda</div>
+          <select class="perfil-select" id="perfil-moneda">
+            <option value="ARS">🇦🇷 Peso argentino ($)</option>
+            <option value="USD">🇺🇸 Dólar (USD)</option>
+            <option value="BRL">🇧🇷 Real (R$)</option>
+            <option value="EUR">🇪🇺 Euro (€)</option>
+            <option value="CLP">🇨🇱 Peso chileno ($)</option>
+            <option value="UYU">🇺🇾 Peso uruguayo ($)</option>
+            <option value="MXN">🇲🇽 Peso mexicano ($)</option>
+          </select>
+        </div>
+        <div class="perfil-option">
+          <div class="perfil-option-label"><span>📅</span> Día de cierre</div>
+          <select class="perfil-select" id="perfil-cierre">
+            <option value="1">1 del mes</option>
+            <option value="5">5 del mes</option>
+            <option value="10">10 del mes</option>
+            <option value="15">15 del mes (quincena)</option>
+            <option value="20">20 del mes</option>
+            <option value="25">25 del mes</option>
+          </select>
+        </div>
+        <div class="perfil-option">
+          <div class="perfil-option-label"><span>🌍</span> Zona horaria</div>
+          <select class="perfil-select" id="perfil-tz">
+            <option value="America/Argentina/Buenos_Aires">Buenos Aires (ART)</option>
+            <option value="America/Sao_Paulo">São Paulo (BRT)</option>
+            <option value="America/Santiago">Santiago (CLT)</option>
+            <option value="America/Montevideo">Montevideo (UYT)</option>
+            <option value="America/Mexico_City">Ciudad de México (CST)</option>
+            <option value="Europe/Madrid">Madrid (CET)</option>
+            <option value="America/New_York">Nueva York (EST)</option>
+          </select>
+        </div>
+        <button class="btn-save-perfil" onclick="savePerfil()">Guardar cambios</button>
       </div>
     </div>
 
@@ -704,7 +769,10 @@ function keyLabel(k) {
   const [y,m] = k.split('-');
   return MONTHS[parseInt(m)-1] + ' ' + y;
 }
-function fmt(n) { return '$ ' + Math.round(n).toLocaleString('es-AR'); }
+function fmt(n) {
+  const m = MONEDAS[userPerfil.moneda] || MONEDAS['ARS'];
+  return m.simbolo + Math.round(n).toLocaleString(m.locale);
+}
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escA(s) { return String(s).replace(/'/g,"\\'"); }
 
@@ -741,6 +809,16 @@ onAuthStateChanged(auth, user => {
 
 // FIRESTORE LISTENER
 let ingresos = [];
+let userPerfil = { nombre: '', moneda: 'ARS', cierre: '1', tz: 'America/Argentina/Buenos_Aires' };
+const MONEDAS = {
+  ARS: { simbolo: '$ ', locale: 'es-AR' },
+  USD: { simbolo: 'USD ', locale: 'en-US' },
+  BRL: { simbolo: 'R$ ', locale: 'pt-BR' },
+  EUR: { simbolo: '€ ', locale: 'es-ES' },
+  CLP: { simbolo: '$ ', locale: 'es-CL' },
+  UYU: { simbolo: '$ ', locale: 'es-UY' },
+  MXN: { simbolo: '$ ', locale: 'es-MX' },
+};
 let presupuestos = {};   // { categoria: { monto, _id } }
 let cuotas = [];
 let unsubIngresos = null;
@@ -762,6 +840,14 @@ function startListening(uid) {
     renderIngresos();
     updateBanner();
   });
+
+  // Cargar perfil del usuario
+  try {
+    const { doc: pdoc, getDoc: pget } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
+    const snap = await pget(pdoc(db, 'usuarios', uid, 'config', 'perfil'));
+    if (snap.exists()) { userPerfil = { ...userPerfil, ...snap.data() }; }
+    renderPerfil();
+  } catch(e) {}
 
   if (unsubPresup) unsubPresup();
   unsubPresup = onSnapshot(collection(db, 'usuarios', uid, 'presupuestos'), snap => {
@@ -1073,7 +1159,7 @@ window.openModal = function(id) {
 window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); }
 
 const MAIN_TABS = ['cargar','historial'];
-const MORE_TABS = ['categorias','ingresos','presupuesto','cuotas'];
+const MORE_TABS = ['categorias','ingresos','presupuesto','cuotas','perfil'];
 const ALL_TABS = [...MAIN_TABS, ...MORE_TABS];
 
 window.setTab = function(t) {
@@ -1581,7 +1667,8 @@ function _doPDF() {
 }
 
 function fmtPDF(n) {
-  return '$ ' + Math.round(n).toLocaleString('es-AR');
+  const m = MONEDAS[userPerfil.moneda] || MONEDAS['ARS'];
+  return m.simbolo + Math.round(n).toLocaleString(m.locale);
 }
 
 // SHARE
@@ -1620,6 +1707,48 @@ window.copyLink = function() {
   }).catch(() => {
     showToast('Copiá este link: ' + APP_URL);
   });
+}
+
+// PERFIL
+function renderPerfil() {
+  const nombre = userPerfil.nombre || '';
+  const email = auth.currentUser ? auth.currentUser.email : '';
+  const inicial = nombre ? nombre[0].toUpperCase() : (email ? email[0].toUpperCase() : '?');
+  const avatarEl = document.getElementById('perfil-avatar');
+  if (avatarEl) avatarEl.textContent = inicial;
+  const nombreDisp = document.getElementById('perfil-nombre-display');
+  if (nombreDisp) nombreDisp.textContent = nombre || 'Sin nombre';
+  const emailDisp = document.getElementById('perfil-email-display');
+  if (emailDisp) emailDisp.textContent = email;
+  // Saludo topbar
+  const topUser = document.getElementById('topbar-user');
+  if (topUser) topUser.textContent = nombre ? 'Hola, ' + nombre.split(' ')[0] + ' 👋' : email;
+  // Precargar selects
+  const nm = document.getElementById('perfil-nombre');
+  if (nm) nm.value = nombre;
+  const pm = document.getElementById('perfil-moneda');
+  if (pm) pm.value = userPerfil.moneda || 'ARS';
+  const pc = document.getElementById('perfil-cierre');
+  if (pc) pc.value = userPerfil.cierre || '1';
+  const pt = document.getElementById('perfil-tz');
+  if (pt) pt.value = userPerfil.tz || 'America/Argentina/Buenos_Aires';
+}
+
+window.savePerfil = async function() {
+  const nombre = document.getElementById('perfil-nombre').value.trim();
+  const moneda = document.getElementById('perfil-moneda').value;
+  const cierre = document.getElementById('perfil-cierre').value;
+  const tz = document.getElementById('perfil-tz').value;
+  const uid = auth.currentUser.uid;
+  try {
+    await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js').then(async m => {
+      await m.setDoc(m.doc(db, 'usuarios', uid, 'config', 'perfil'), { nombre, moneda, cierre, tz });
+    });
+    userPerfil = { nombre, moneda, cierre, tz };
+    renderPerfil();
+    render();
+    showToast('Perfil guardado ✓');
+  } catch(e) { showToast('Error al guardar: ' + e.message); }
 }
 
 window.selectChip = function(el) {
