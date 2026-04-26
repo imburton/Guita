@@ -55,6 +55,7 @@
   .banner-month{font-size:17px;font-weight:600;margin-bottom:1px}
   .banner-amount{font-family:var(--mono);font-size:28px;font-weight:500;letter-spacing:-0.02em;word-break:break-all}
   .banner-sub{font-size:11px;opacity:0.65;margin-top:3px}
+  .banner-eye{background:none;border:none;color:rgba(255,255,255,0.7);font-size:16px;cursor:pointer;padding:0;margin-left:6px;vertical-align:middle;line-height:1}
 
   .tab-bar{display:flex;background:var(--surface2);border-radius:10px;padding:3px;margin-bottom:14px;gap:3px;position:relative}
   .tab{flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--text2);border:none;background:none;font-family:var(--font);transition:all 0.15s;white-space:nowrap}
@@ -309,10 +310,8 @@
       <label>Contraseña</label>
       <div class="pass-wrap">
         <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')authAction()">
-        <button class="btn-eye" type="button" onclick="togglePass()" id="btn-eye" tabindex="-1">
-          <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-          </svg>
+        <button class="btn-eye" type="button" onclick="togglePass()" tabindex="-1" id="btn-eye">
+          👁️
         </button>
       </div>
     </div>
@@ -344,7 +343,10 @@
       <div class="banner">
         <div class="banner-label">mes en curso</div>
         <div class="banner-month" id="banner-month">—</div>
-        <div class="banner-amount" id="banner-amount">$ 0</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="banner-amount" id="banner-amount">$ 0</div>
+          <button class="banner-eye" onclick="toggleBannerAmount()" id="banner-eye-btn">👁️</button>
+        </div>
         <div class="banner-sub">total gastado</div>
       </div>
       <div class="banner-balance balance-zero" id="banner-balance">
@@ -1708,14 +1710,24 @@ window.dismissInstall = function() {
 
 window.togglePass = function() {
   const inp = document.getElementById('inp-pass');
-  const icon = document.getElementById('eye-icon');
+  const btn = document.getElementById('btn-eye');
   if (inp.type === 'password') {
     inp.type = 'text';
-    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    btn.textContent = '🙈';
   } else {
     inp.type = 'password';
-    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    btn.textContent = '👁️';
   }
+}
+
+// Toggle ocultar monto banner
+let bannerVisible = true;
+window.toggleBannerAmount = function() {
+  bannerVisible = !bannerVisible;
+  const el = document.getElementById('banner-amount');
+  const btn = document.getElementById('banner-eye-btn');
+  el.style.filter = bannerVisible ? 'none' : 'blur(8px)';
+  btn.textContent = bannerVisible ? '👁️' : '🙈';
 }
 
 // Registrar Service Worker
