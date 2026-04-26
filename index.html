@@ -215,6 +215,28 @@
     display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;
   }
   .btn-export-pdf:active{background:var(--surface2)}
+  .btn-share-fab{
+    position:fixed;bottom:24px;right:16px;z-index:200;display:none;
+    background:#0d9488;color:#fff;border:none;border-radius:50px;
+    padding:12px 18px;font-size:13px;font-weight:500;font-family:var(--font);
+    cursor:pointer;display:flex;align-items:center;gap:6px;
+    box-shadow:0 4px 16px rgba(13,148,136,0.4);
+  }
+  .btn-share-fab:active{opacity:0.85}
+
+  .share-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end;justify-content:center}
+  .share-overlay.open{display:flex}
+  .share-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:20px 16px 36px;width:100%;max-width:520px}
+  .share-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+  .share-title{font-size:15px;font-weight:600;text-align:center;margin-bottom:6px}
+  .share-url{font-size:12px;color:var(--text3);text-align:center;margin-bottom:20px;word-break:break-all;font-family:var(--mono)}
+  .share-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .share-btn{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font)}
+  .share-btn-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px}
+  .share-btn-label{font-size:11px;color:var(--text2);font-weight:500}
+  .btn-copy-link{width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:14px;border-radius:10px;padding:13px;cursor:pointer;font-weight:500}
+  .btn-copy-link:active{background:var(--border)}
+
   .btn-traer-fijos{
     width:100%;border:1.5px dashed var(--accent);background:var(--accent-light);
     color:var(--accent-text);border-radius:10px;padding:13px;font-size:14px;
@@ -583,6 +605,39 @@
   </div>
 </div>
 
+<!-- SHARE SHEET -->
+<div class="share-overlay" id="share-overlay" onclick="closeShare(event)">
+  <div class="share-sheet">
+    <div class="share-handle"></div>
+    <div class="share-title">Compartir Guita 🎩</div>
+    <div class="share-url" id="share-url-text"></div>
+    <div class="share-btns">
+      <button class="share-btn" onclick="shareVia('whatsapp')">
+        <div class="share-btn-icon" style="background:#dcfce7">💬</div>
+        <span class="share-btn-label">WhatsApp</span>
+      </button>
+      <button class="share-btn" onclick="shareVia('telegram')">
+        <div class="share-btn-icon" style="background:#e0f2fe">✈️</div>
+        <span class="share-btn-label">Telegram</span>
+      </button>
+      <button class="share-btn" onclick="shareVia('sms')">
+        <div class="share-btn-icon" style="background:#fef9c3">💬</div>
+        <span class="share-btn-label">SMS</span>
+      </button>
+      <button class="share-btn" onclick="shareVia('native')">
+        <div class="share-btn-icon" style="background:#f3e8ff">⬆️</div>
+        <span class="share-btn-label">Más</span>
+      </button>
+    </div>
+    <button class="btn-copy-link" onclick="copyLink()">📋 Copiar link</button>
+  </div>
+</div>
+
+<!-- FAB COMPARTIR -->
+<button class="btn-share-fab" id="btn-share-fab" onclick="openShare()">
+  🔗 Compartir app
+</button>
+
 <!-- UPDATE BANNER -->
 <div class="update-banner" id="update-banner">
   <div class="update-icon">🔄</div>
@@ -657,6 +712,7 @@ function showScreen(name) {
   document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('auth-screen').style.display = name === 'auth' ? 'flex' : 'none';
   document.getElementById('app-screen').style.display = name === 'app' ? 'block' : 'none';
+  document.getElementById('btn-share-fab').style.display = name === 'app' ? 'flex' : 'none';
 }
 
 // AUTH STATE - timeout por si Firebase tarda o falla
@@ -1526,6 +1582,44 @@ function _doPDF() {
 
 function fmtPDF(n) {
   return '$ ' + Math.round(n).toLocaleString('es-AR');
+}
+
+// SHARE
+const APP_URL = window.location.href.split('?')[0];
+const SHARE_MSG = encodeURIComponent('🎩 Usá Guita para controlar tus gastos fácil y rápido: ' + APP_URL);
+
+window.openShare = function() {
+  document.getElementById('share-url-text').textContent = APP_URL;
+  document.getElementById('share-overlay').classList.add('open');
+}
+
+window.closeShare = function(e) {
+  if (e.target === document.getElementById('share-overlay')) {
+    document.getElementById('share-overlay').classList.remove('open');
+  }
+}
+
+window.shareVia = function(platform) {
+  const urls = {
+    whatsapp: 'https://wa.me/?text=' + SHARE_MSG,
+    telegram: 'https://t.me/share/url?url=' + encodeURIComponent(APP_URL) + '&text=' + encodeURIComponent('🎩 Usá Guita para controlar tus gastos fácil y rápido'),
+    sms: 'sms:?body=' + SHARE_MSG,
+  };
+  if (platform === 'native' && navigator.share) {
+    navigator.share({ title: 'Guita 🎩', text: 'Controlá tus gastos fácil y rápido', url: APP_URL });
+    return;
+  }
+  if (urls[platform]) window.open(urls[platform], '_blank');
+  document.getElementById('share-overlay').classList.remove('open');
+}
+
+window.copyLink = function() {
+  navigator.clipboard.writeText(APP_URL).then(() => {
+    showToast('✓ Link copiado');
+    document.getElementById('share-overlay').classList.remove('open');
+  }).catch(() => {
+    showToast('Copiá este link: ' + APP_URL);
+  });
 }
 
 window.selectChip = function(el) {
