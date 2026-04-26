@@ -1721,13 +1721,13 @@ window.togglePass = function() {
 }
 
 // Toggle ocultar monto banner
-let bannerVisible = true;
+window._bannerVisible = true;
 window.toggleBannerAmount = function() {
-  bannerVisible = !bannerVisible;
+  window._bannerVisible = !window._bannerVisible;
   const el = document.getElementById('banner-amount');
   const btn = document.getElementById('banner-eye-btn');
-  el.style.filter = bannerVisible ? 'none' : 'blur(8px)';
-  btn.textContent = bannerVisible ? '👁️' : '🙈';
+  el.style.filter = window._bannerVisible ? 'none' : 'blur(8px)';
+  btn.textContent = window._bannerVisible ? '👁️' : '🙈';
 }
 
 // Registrar Service Worker
