@@ -310,7 +310,7 @@
       <label>Contraseña</label>
       <div class="pass-wrap">
         <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')authAction()">
-        <button class="btn-eye" type="button" onclick="togglePass()" tabindex="-1" id="btn-eye">
+        <button class="btn-eye" type="button" tabindex="-1" id="btn-eye">
           👁️
         </button>
       </div>
@@ -345,7 +345,7 @@
         <div class="banner-month" id="banner-month">—</div>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="banner-amount" id="banner-amount">$ 0</div>
-          <button class="banner-eye" onclick="toggleBannerAmount()" id="banner-eye-btn">👁️</button>
+          <button class="banner-eye" id="banner-eye-btn">👁️</button>
         </div>
         <div class="banner-sub">total gastado</div>
       </div>
@@ -1729,6 +1729,30 @@ window.toggleBannerAmount = function() {
   el.style.filter = window._bannerVisible ? 'none' : 'blur(8px)';
   btn.textContent = window._bannerVisible ? '👁️' : '🙈';
 }
+
+// Attachear eventos que no funcionan con onclick en módulos ES6
+document.addEventListener('DOMContentLoaded', () => {
+  const btnEye = document.getElementById('btn-eye');
+  if (btnEye) btnEye.addEventListener('click', () => {
+    const inp = document.getElementById('inp-pass');
+    if (!inp) return;
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      btnEye.textContent = '🙈';
+    } else {
+      inp.type = 'password';
+      btnEye.textContent = '👁️';
+    }
+  });
+
+  const btnBanner = document.getElementById('banner-eye-btn');
+  if (btnBanner) btnBanner.addEventListener('click', () => {
+    window._bannerVisible = !window._bannerVisible;
+    const el = document.getElementById('banner-amount');
+    if (el) el.style.filter = window._bannerVisible ? 'none' : 'blur(8px)';
+    btnBanner.textContent = window._bannerVisible ? '👁️' : '🙈';
+  });
+});
 
 // Registrar Service Worker
 if ('serviceWorker' in navigator) {
