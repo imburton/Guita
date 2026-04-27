@@ -1012,6 +1012,14 @@ function renderList() {
   else list = gastos.filter(g => g.month === activeFilter);
   const el = document.getElementById('expense-list');
   if (!list.length) { el.innerHTML = '<div class="empty">Sin gastos en este período.</div>'; return; }
+  // Total del período/filtro
+  const totalFiltro = list.reduce((s,g) => s+g.monto, 0);
+  const labelFiltro = activeFilter === 'fijo' ? 'Total gastos fijos' : activeFilter === 'all' ? 'Total general' : 'Total ' + keyLabel(activeFilter);
+  el.innerHTML = '';
+  const totalBar = document.createElement('div');
+  totalBar.style = 'display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:10px;margin-bottom:8px;border:1px solid var(--border)';
+  totalBar.innerHTML = '<span style="font-size:12px;font-weight:500;color:var(--text2)">' + labelFiltro + ' (' + list.length + ')</span><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--text)">' + fmt(totalFiltro) + '</span>';
+  el.appendChild(totalBar);
   el.innerHTML = list.map(g => {
     const init = g.id.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase() || 'G';
     const d = new Date(g.ts);
@@ -1032,7 +1040,7 @@ function renderList() {
       </button>
       <button class="expense-del" onclick="delGasto('${escA(g._id)}')" title="Eliminar">✕</button>
     </div>`;
-  }).join('');
+  }).join(''); el.appendChild(listDiv);
 }
 
 function renderCats() {
